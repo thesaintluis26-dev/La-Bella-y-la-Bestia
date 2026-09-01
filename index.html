@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Misión: La Bella y la Bestia 🥀</title>
+    <style>
+        :root {
+            --bg: #121212; 
+            --card-bg: #1e1e1e;
+            --primary: #d4af37; /* Dorado clásico */
+            --text: #e0e0e0;
+            --border: #333333;
+            --success: #27ae60;
+            --error: #e74c3c;
+            --accent: #8b0000; /* Rojo vino elegante */
+        }
+
+        body {
+            font-family: 'Georgia', serif;
+            background-color: var(--bg);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .container {
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+            width: 100%;
+            max-width: 480px;
+            border: 1px solid var(--primary);
+            text-align: center;
+        }
+
+        /* Pantallas */
+        .screen { display: none; }
+        .active { display: block; }
+
+        h1 { font-size: 1.6rem; color: var(--primary); margin-bottom: 10px; }
+        p { line-height: 1.6; margin-bottom: 20px; font-size: 0.95rem; }
+
+        .score-board {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: var(--primary);
+            background: rgba(212, 175, 55, 0.1);
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px dashed var(--primary);
+        }
+
+        .riddle-text {
+            font-weight: bold;
+            font-size: 1.1rem;
+            color: #ffffff;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .option-btn {
+            background: #2a2a2a;
+            color: var(--text);
+            border: 1px solid var(--border);
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: left;
+            font-family: inherit;
+        }
+
+        .option-btn:hover {
+            background: var(--accent);
+            border-color: var(--primary);
+            color: #fff;
+        }
+
+        .feedback { 
+            font-size: 0.9rem; 
+            margin-top: 10px; 
+            min-height: 1.2rem; 
+            font-weight: bold;
+        }
+        .feedback.correct { color: var(--success); }
+        .feedback.wrong { color: var(--error); }
+
+        .box-icon { font-size: 3.5rem; margin: 15px 0; display: block; }
+
+        /* Estilo del Poema */
+        .poem-box {
+            background: rgba(139, 0, 0, 0.15);
+            border-left: 3px solid var(--primary);
+            border-right: 3px solid var(--primary);
+            padding: 20px 15px;
+            margin: 20px 0;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .poem-text {
+            font-style: italic;
+            font-size: 0.92rem;
+            line-height: 1.7;
+            color: #f0e6d2;
+            white-space: pre-line;
+            margin: 0;
+        }
+
+        .poem-signature {
+            margin-top: 15px;
+            font-weight: bold;
+            color: var(--primary);
+            font-size: 1rem;
+            text-align: right;
+            display: block;
+        }
+
+        /* Formulario final */
+        #final-form { text-align: left; margin-top: 25px; }
+        #final-form label { display: block; margin-top: 15px; font-weight: bold; font-size: 0.85rem; color: var(--primary); }
+        #final-form select, #final-form input[type="date"], #final-form input[type="time"], #final-form textarea {
+            width: 100%; padding: 10px; margin-top: 6px; border: 1px solid var(--border); border-radius: 8px;
+            background: #121212; color: white; font-family: inherit; box-sizing: border-box;
+        }
+        
+        #btn-claim {
+            width: 100%;
+            background: var(--success); 
+            color: white; 
+            font-size: 1.1rem; 
+            margin-top: 20px;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 0 15px rgba(39, 174, 96, 0.4); 
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(39, 174, 96, 0.7); }
+            70% { box-shadow: 0 0 0 12px rgba(39, 174, 96, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(39, 174, 96, 0); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    
+    <!-- PANTALLA 1: INICIO -->
+    <div id="screen-start" class="screen active">
+        <span class="box-icon">🔒🥀</span>
+        <h1>Misión: Desbloquear la Caja</h1>
+        <p>Hay un mensaje guardado para ti bajo candado. Para abrir la caja misteriosa debes demostrar que recuerdas nuestra historia respondiendo 3 preguntas.</p>
+        <p>Acumula <strong>300 puntos</strong> para romper el hechizo.</p>
+        <button class="option-btn" style="text-align:center; font-weight:bold; background:var(--primary); color:#000;" onclick="nextScreen(1)">Comenzar Desafío →</button>
+    </div>
+
+    <!-- PANTALLA 2: JUEGO -->
+    <div id="screen-game" class="screen">
+        <div class="score-board">Puntos: <span id="score">0</span> / 300</div>
+        
+        <div id="riddle-container">
+            <p style="color:var(--primary); font-size:0.9rem;">Incógnita <span id="riddle-num">1</span> de 3</p>
+            <span id="riddle-text" class="riddle-text">Cargando pregunta...</span>
+            
+            <div id="options-box" class="options-container">
+                <!-- Opciones cargadas dinámicamente -->
+            </div>
+            
+            <div id="feedback" class="feedback"></div>
+        </div>
+    </div>
+
+    <!-- PANTALLA 3: DESBLOQUEADO, POEMA Y FORMULARIO -->
+    <div id="screen-win" class="screen">
+        <span class="box-icon">🎁✨</span>
+        <h1 style="color: var(--primary);">¡CAJA DESBLOQUEADA!</h1>
+        <p style="font-size:0.85rem; color:#aaa;">Has alcanzado los 300 puntos necesarios.</p>
+
+        <!-- EL POEMA -->
+        <div class="poem-box">
+            <p class="poem-text">Bajo el peso de un castillo olvidado y sin luz,
+un alma escondida en la sombra del miedo,
+llevaba en el pecho la marca y la cruz
+de un cuerpo monstruoso y un frío enredo.
+
+Pero llegaste tú, con pasos de seda,
+iluminando el mármol, quebrando el invierno,
+demostrando al mundo que la belleza queda
+donde amansa el amor al dolor más eterno.
+
+No fueron tus ojos en la piel deslumbrante,
+sino la mirada que vio sin juzgar;
+encontraste en la fiera un corazón palpitante,
+un refugio sereno donde descansar.
+
+Tus manos suaves tocaron la garra,
+tu voz fue el susurro que calmó la tormenta;
+un romance nació donde el miedo desgarra,
+transformando el hechizo en una llama sedienta.
+
+Ya no hay más Bestia bajo el cielo brillante,
+ni piel de fiera que oculte la verdad:
+en el abrazo cálido de la Bella constante,
+floreció para siempre la libertad.</p>
+            <span class="poem-signature">Atentamente La Bestia.</span>
+        </div>
+
+        <hr style="border-color: var(--border); margin: 25px 0 15px 0;">
+
+        <p style="font-weight:bold; color:var(--primary);">Ahora, acordemos nuestra próxima cita 🌹</p>
+
+        <!-- FORMULARIO DE CITA -->
+        <form id="final-form">
+            <label>¿Qué te gustaría hacer?</label>
+            <select id="lugar" required>
+                <option value="" disabled selected>Selecciona una opción</option>
+                <option value="Un café y algo dulce">Un café y algo dulce</option>
+                <option value="Cena rica y tranqui">Cena rica y tranqui</option>
+                <option value="Un helado o postre">Ir por un helado o postre</option>
+                <option value="Plan Sorpresa">Sorpréndeme tú</option>
+            </select>
+
+            <label>¿Qué día te queda mejor?</label>
+            <input type="date" id="dia" required>
+
+            <label>¿A qué hora nos vemos?</label>
+            <input type="time" id="hora" required>
+
+            <label>¿Algún detalle extra? (Comida preferida, notas...)</label>
+            <textarea id="notas" rows="2" placeholder="Ej: Lugares tranquilos, al aire libre..."></textarea>
+
+            <button type="submit" id="btn-claim">Confirmar y Enviar Respuesta 📩</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    // --- PREGUNTAS Y OPCIONES ---
+    const riddles = [
+        { 
+            q: "¿Dónde fue nuestro primer beso?", 
+            options: [
+                { text: "A: Cafetería", correct: false },
+                { text: "B: Biblioteca", correct: false },
+                { text: "C: Salón", correct: true }
+            ]
+        },
+        { 
+            q: "¿Qué era lo que más me gustaba hacerte?", 
+            options: [
+                { text: "A: Agarrarte la mano", correct: true },
+                { text: "B: Morderte", correct: false },
+                { text: "C: Ninguna de las dos", correct: false }
+            ]
+        },
+        { 
+            q: "¿Cuál fue el regalo que te di cuando nos estábamos conociendo?", 
+            options: [
+                { text: "A: Collar", correct: false },
+                { text: "B: Peluche", correct: false },
+                { text: "C: Pulsera", correct: true }
+            ]
+        }
+    ];
+
+    // ⚠️ COLOCA AQUÍ TU NÚMERO DE TELÉFONO CON CÓDIGO DE PAÍS (Ejemplo Panamá: 50761234567)
+    const miNumeroTelefono = "507XXXXXXXX"; 
+
+
+    // --- LÓGICA DEL JUEGO ---
+    let currentRiddleIndex = 0;
+    let score = 0;
+
+    function nextScreen(screenNum) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        if (screenNum === 1) {
+            document.getElementById('screen-game').classList.add('active');
+            loadRiddle();
+        } else if (screenNum === 'win') {
+            document.getElementById('screen-win').classList.add('active');
+        }
+    }
+
+    function loadRiddle() {
+        if (currentRiddleIndex < riddles.length) {
+            const currentRiddle = riddles[currentRiddleIndex];
+            document.getElementById('riddle-num').innerText = currentRiddleIndex + 1;
+            document.getElementById('riddle-text').innerText = currentRiddle.q;
+            document.getElementById('feedback').innerText = '';
+            document.getElementById('feedback').className = 'feedback';
+
+            const optionsBox = document.getElementById('options-box');
+            optionsBox.innerHTML = '';
+
+            currentRiddle.options.forEach(option => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerText = option.text;
+                btn.onclick = () => selectOption(option.correct, btn);
+                optionsBox.appendChild(btn);
+            });
+        } else {
+            if (score >= 300) {
+                nextScreen('win');
+            }
+        }
+    }
+
+    function selectOption(isCorrect, btnElement) {
+        const feedbackDiv = document.getElementById('feedback');
+        const allButtons = document.querySelectorAll('.option-btn');
+        
+        // Bloquear todos los botones tras responder
+        allButtons.forEach(b => b.style.pointerEvents = 'none');
+
+        if (isCorrect) {
+            score += 100;
+            document.getElementById('score').innerText = score;
+            btnElement.style.background = 'var(--success)';
+            btnElement.style.borderColor = 'var(--success)';
+            btnElement.style.color = '#fff';
+            
+            feedbackDiv.innerText = "¡Respuesta Correcta! +100 puntos";
+            feedbackDiv.className = "feedback correct";
+
+            setTimeout(() => {
+                currentRiddleIndex++;
+                loadRiddle();
+            }, 1200);
+
+        } else {
+            btnElement.style.background = 'var(--error)';
+            btnElement.style.borderColor = 'var(--error)';
+            btnElement.style.color = '#fff';
+
+            feedbackDiv.innerText = "Respuesta incorrecta. Inténtalo de nuevo.";
+            feedbackDiv.className = "feedback wrong";
+
+            setTimeout(() => {
+                // Desbloquear botones para reintentar
+                allButtons.forEach(b => {
+                    b.style.pointerEvents = 'auto';
+                    b.style.background = '#2a2a2a';
+                    b.style.borderColor = 'var(--border)';
+                });
+                feedbackDiv.innerText = "";
+            }, 1200);
+        }
+    }
+
+    // --- ENVÍO A WHATSAPP ---
+    document.getElementById('final-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const lugar = document.getElementById('lugar').value;
+        const dia = document.getElementById('dia').value;
+        const hora = document.getElementById('hora').value;
+        const notas = document.getElementById('notas').value;
+
+        const mensajeWa = `¡Misión cumplida! 🎉 He desbloqueado la caja con 300 puntos y me encantó el poema 🌹%0A%0A` +
+                          `📌 *Plan elegido:* ${lugar}%0A` +
+                          `📅 *Día:* ${dia}%0A` +
+                          `⏰ *Hora:* ${hora}%0A` +
+                          `📝 *Notas:* ${notas || 'Ninguna'}`;
+
+        window.location.href = `https://wa.me/${miNumeroTelefono}?text=${mensajeWa}`;
+    });
+</script>
+
+</body>
+</html>
